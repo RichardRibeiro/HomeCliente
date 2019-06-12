@@ -34,6 +34,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
     private static ArrayList<Agendamento> agendamento = new ArrayList();
     private static Gson gson = new Gson();
     private Session session;
+    DefaultTableModel model;
     private static RXTX arduino;
     private static Timer timer = new Timer();
     final long segundos = (1000);
@@ -43,12 +44,17 @@ public class JanelaPrincipal extends javax.swing.JFrame {
         initComponents();
         conectarComArduino();
         conectarComWebsocket();
+        carregarTabela();
         timer.scheduleAtFixedRate(tarefa, 0, segundos);
     }
 
     public void carregarTabela() {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        jTable1.removeAll();
+   
+        model = new DefaultTableModel();
+        model = (DefaultTableModel) jTable1.getModel();
         model.setNumRows(0);
+
         if (model.getColumnCount() == 0) {
             model.addColumn("Data");
             model.addColumn("Horas");
@@ -67,6 +73,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 agenda.getTv()
             });
         }
+             
     }
 
     public String pegardata() {
@@ -138,6 +145,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                         try {
                             arduino.enviarDados(msgArduino(agenda.getVentilador(), agenda.getLuzSala(), agenda.getLuzQuarto(), agenda.getTv()));
                             // agendamento.remove(agenda);
+                             campoComando.setText("id=" + agenda.getId() + " data=" + agenda.getData() + " horas=" + agenda.getHoras() + ", ventilador =" + agenda.getVentilador() + " luzSala =" + agenda.getLuzSala() + " luzQuarto =" + agenda.getLuzQuarto() + ", tv=" + agenda.getTv());
                             System.out.println(msgArduino(agenda.getVentilador(), agenda.getLuzSala(), agenda.getLuzQuarto(), agenda.getTv()));
                             System.out.println("id=" + agenda.getId() + " data=" + agenda.getData() + " horas=" + agenda.getHoras() + ", ventilador =" + agenda.getVentilador() + " luzSala =" + agenda.getLuzSala() + " luzQuarto =" + agenda.getLuzQuarto() + ", tv=" + agenda.getTv());
 
@@ -192,11 +200,13 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                 campoHorario.setText(msg.getDataEHora());
             }
             if (msg.getComando() != null) {
+                agendamento = new ArrayList();
+                
                 Agendamento[] agenda = gson.fromJson(msg.getComando(), Agendamento[].class);
                 for (int i = 0; i < agenda.length; i++) {
                     agendamento.add(agenda[i]);
-                }
-                campoComando.setText(agenda[2].toString());
+                } 
+                
             }
         }
     }
@@ -249,7 +259,7 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(campoComando, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGap(0, 222, Short.MAX_VALUE))
+                        .addGap(0, 516, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -269,8 +279,8 @@ public class JanelaPrincipal extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jLabel2)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
                 .addGap(41, 41, 41))
         );
 
